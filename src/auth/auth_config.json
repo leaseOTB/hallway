@@ -1,7 +1,0 @@
-  
-{
-  "domain": "dev-5zqg51mo.us.auth0.com",
-  "clientId": "Xg5tU3MvdgWQvIdVF3QC4qpKbotxnpM2",
-  "redirect_uri": "http://localhost:3000",
-  "audience": "https://profound-troll-67.hasura.app/v1/graphql"
-}
