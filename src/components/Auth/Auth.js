@@ -38,7 +38,7 @@ class Auth {
           // The code to insert this user info to db has been handled at Auth0 Rule.
         });
       } else if (err) {
-        history.replace("/home");
+        history.replace("/");
         // window.location.href="/home";
         console.error(err);
         alert(`Error: ${err.error}. Check the console for further details.`);
@@ -58,7 +58,7 @@ class Auth {
     this.sub = authResult.idTokenPayload.sub;
 
     // navigate to the home route
-    history.replace("/home");
+    history.replace("/");
     // window.location.href="/home";
   }
 

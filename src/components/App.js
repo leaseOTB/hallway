@@ -1,65 +1,93 @@
-import React, { Component } from "react";
-import PropTypes from "prop-types";
-import { Navbar, Button } from "react-bootstrap";
-import "../styles/App.css";
 
-class App extends Component {
-  goTo(route) {
-    this.props.history.replace(`/${route}`);
+import React, { useState } from 'react';
+
+// for authentication using auth0
+// for routing
+import { Switch, Route } from 'react-router-dom';
+
+// for apollo client
+import { ApolloProvider } from '@apollo/react-hooks';
+import { ApolloClient, HttpLink, InMemoryCache } from 'apollo-boost';
+import { setContext } from 'apollo-link-context';
+
+// for toast notifications
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+import SecuredRoute from './SecuredRoute';
+import '../styles/App.css';
+import Header from './Header.js';
+import OrgSearch from './TenantOrg/OrgSearch.js';
+import OrgCreate from './TenantOrg/OrgCreate.js';
+import { useAuth0 } from '../auth/react-auth0-wrapper';
+
+
+function App() {
+  const { isAuthenticated, user } = useAuth0();
+
+  // used state to get accessToken through getTokenSilently(), the component re-renders when state changes, thus we have
+  // our accessToken in apollo client instance.
+  const [accessToken, setAccessToken] = useState('');
+
+  const { getTokenSilently, loading } = useAuth0();
+  if (loading) {
+    return 'Loading...';
   }
 
-  login() {
-    this.props.auth.login();
-  }
-
-  logout() {
-    this.props.auth.logout();
-  }
-
-  componentDidMount() {
-    if (this.props.auth.isAuthenticated()) {
-      this.props.history.push("/home");
+  // get access token
+  const getAccessToken = async () => {
+    // getTokenSilently() returns a promise
+    try {
+      const token = await getTokenSilently();
+      setAccessToken(token);
+      console.log(token);
+    } catch (e) {
+      console.log(e);
     }
-  }
+  };
+  getAccessToken();
 
-  render() {
-    const { isAuthenticated } = this.props.auth;
+  // for apollo client
+  const httpLink = new HttpLink({
+    uri: 'https://profound-troll-67.hasura.app/v1/graphql'
+  });
 
-    return (
-      <div>
-        <Navbar fluid className="removeMarBottom">
-          <Navbar.Header className="navheader">
-            <Navbar.Brand className="navBrand">hallway</Navbar.Brand>
-            {!isAuthenticated() && (
-              <Button
-                id="qsLoginBtn"
-                bsStyle="primary"
-                className="btn-margin logoutBtn"
-                onClick={this.login.bind(this)}
-              >
-                Log In
-              </Button>
-            )}
-            {isAuthenticated() && (
-              <Button
-                id="qsLogoutBtn"
-                bsStyle="primary"
-                className="btn-margin logoutBtn"
-                onClick={this.logout.bind(this)}
-              >
-                Log Out
-              </Button>
-            )}
-          </Navbar.Header>
-        </Navbar>
-      </div>
-    );
-  }
+  const authLink = setContext((_, { headers }) => {
+    const token = accessToken;
+    if (token) {
+      return {
+        headers: {
+          ...headers,
+          authorization: `Bearer ${token}`
+        }
+      };
+    } else {
+      return {
+        headers: {
+          ...headers
+        }
+      };
+    }
+  });
+
+  const client = new ApolloClient({
+    link: authLink.concat(httpLink),
+    cache: new InMemoryCache()
+  });
+
+  // used for toast notifications
+  toast.configure();
+
+  return (
+    <ApolloProvider client={client}>
+      <Header />
+      {isAuthenticated && <OrgCreate />}
+      <Switch>
+        <Route exact path='/' component={OrgSearch} />
+        <SecuredRoute path='/create' component={OrgCreate} />
+      </Switch>
+    </ApolloProvider>
+  );
 }
-
-App.propTypes = {
-  history: PropTypes.object,
-  auth: PropTypes.object
-};
 
 export default App;
