@@ -32,7 +32,6 @@
     "no-param-reassign": 0,
     "one-var": [2, { "var": "always" }],
     "one-var-declaration-per-line": [2, "initializations"],
-    "quotes": ["error", "single"],
     "react/jsx-filename-extension": 0,
     "react/forbid-prop-types": 0
   }
