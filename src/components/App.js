@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 // for authentication using auth0
@@ -14,13 +13,31 @@ import { setContext } from 'apollo-link-context';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+import {CircularProgress} from '@material-ui/core'
+
+import { PusherProvider } from 'react-pusher-hoc'
+
+import Pusher from 'pusher-js'
+
+
+
 import SecuredRoute from './SecuredRoute';
-import '../styles/App.css';
-import Header from './Header.js';
+
+import Layout from './Layout/Layout.js';
 import OrgSearch from './TenantOrg/OrgSearch.js';
 import OrgCreate from './TenantOrg/OrgCreate.js';
+import OrgDashboard from './TenantOrg/OrgDashboard.js'
+
 import { useAuth0 } from '../auth/react-auth0-wrapper';
 
+const pusherClient = new Pusher(
+  process.env.REACT_APP_PUSHER_KEY,
+  { auth: {
+    headers: {
+      'x-domain-token': 'Access-Control-Allow-Origin'
+    }
+  }}
+)
 
 function App() {
   const { isAuthenticated, user } = useAuth0();
@@ -30,8 +47,14 @@ function App() {
   const [accessToken, setAccessToken] = useState('');
 
   const { getTokenSilently, loading } = useAuth0();
+
   if (loading) {
-    return 'Loading...';
+    return (
+      <div>
+
+        <CircularProgress/>
+      </div>
+    )
   }
 
   // get access token
@@ -80,12 +103,15 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
-      <Header />
-      {isAuthenticated && <OrgCreate />}
-      <Switch>
-        <Route exact path='/' component={OrgSearch} />
-        <SecuredRoute path='/create' component={OrgCreate} />
-      </Switch>
+      <PusherProvider value={pusherClient}>
+        <Layout>
+          <Switch>
+            <Route exact path='/' component={OrgSearch} />
+            <SecuredRoute exact path='/:id' component={OrgDashboard} />
+            <SecuredRoute path='/create' component={OrgCreate} />
+          </Switch>
+        </Layout>
+      </PusherProvider>
     </ApolloProvider>
   );
 }

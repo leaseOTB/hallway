@@ -5,6 +5,10 @@ import { Link } from "react-router-dom";
 import { useQuery } from "@apollo/react-hooks";
 import { timeDifferenceForDate } from "../../utils/TimeDifference.js";
 
+import {Grid, Card, CardActionArea, CardContent, Typography } from '@material-ui/core'
+
+import {TenantOrgCard} from '@leaseotb/ui-components'
+
 export const ORG_INFO = gql`
   query($id: Int!) {
     orgs(where: { id: { _eq: $id } }) {
@@ -12,7 +16,9 @@ export const ORG_INFO = gql`
       name
       description
       created_at
-      admin_id
+      user {
+        name
+      }
     }
   }
 `;
@@ -24,18 +30,38 @@ function OrgCard(props) {
     variables: { id: orgId }
   });
 
+
+
   if (loading) return "";
   if (error) return `Error! ${error.message}`;
+
 
   return (
     <>
         {data.orgs.map((org, index) => (
-          <article className="Post" key={index}>
-            <div className="Post-image">
+          <Grid item xs={6} key={index} style={{padding: '2em'}}>
+            <Card>
+            <CardActionArea href={`/${org.id}`}>
+            <CardContent>
+            <Typography>
               {org.name}
-            </div>
-              {timeDifferenceForDate(org.created_at)}
-          </article>
+
+            </Typography>
+            </CardContent>
+
+            <hr/>
+
+            {org.description}
+            <hr/>
+            {org.user.name}
+
+            <hr/>
+            {timeDifferenceForDate(org.created_at)}
+            </CardActionArea>
+
+
+            </Card>
+          </Grid>
         ))}
     </>
   );
