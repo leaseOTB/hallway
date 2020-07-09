@@ -5,6 +5,7 @@ import { useQuery } from "@apollo/react-hooks";
 import {Grid, Card, Typography, CircularProgress} from '@material-ui/core'
 
 import OrgCard from "./OrgCard.js"
+import { Link } from "react-router-dom";
 
 export const ORG_LIST = gql`
   {
@@ -22,11 +23,16 @@ function OrgSearch(props) {
   if (error) return `Error! ${error.message}`;
 
   return (
-    <Grid container direction='row'>
-      {data.orgs.map((org, index) => (
-          <OrgCard id={org.id} key={index}/>
-      ))}
-    </Grid>
+    <>
+      <Grid container>
+        <Link to='/organizations/create'>Create New Tenant Org</Link>
+      </Grid>
+      <Grid container direction='row'>
+        {data.orgs.map((org, index) => (
+            <OrgCard id={org.id} key={index}/>
+        ))}
+      </Grid>
+    </>
   );
 }
 

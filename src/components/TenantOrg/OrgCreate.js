@@ -32,28 +32,28 @@ function OrgCreate() {
   
   return (
     <>
-  <Typography>Create</Typography>
-  <form
-    onSubmit={e => {
-      e.preventDefault();
-      // checks if the url points to a valid image
-      
-        createOrg({
-          variables: { description, name, userId: user.sub},
-          refetchQueries: [
-            { query: ORG_LIST },
-          ],
-        }).catch(function(error) {
-          console.log(error);
-          setError(error.toString());
-        });
-      
-      //You are having a controlled component where input value is determined by this.state._variable_name.
-      // So once you submit you have to clear your state which will clear your input automatically.
-      setDescription('');
-      setName('');
-    }}
-  >
+      <Typography>Create</Typography>
+      <form
+        onSubmit={e => {
+          e.preventDefault();
+          // checks if the url points to a valid image
+          
+            createOrg({
+              variables: { name, description, userId: user.sub},
+              refetchQueries: [
+                { query: ORG_LIST },
+              ],
+            }).catch(function(error) {
+              console.log(error);
+              setError(error.toString());
+            });
+          
+          //You are having a controlled component where input value is determined by this.state._variable_name.
+          // So once you submit you have to clear your state which will clear your input automatically.
+          setDescription('');
+          setName('');
+        }}
+      >
       <Grid container>
         <Grid item xs={12}>
           <span>Enter a NAME:</span>
@@ -77,7 +77,6 @@ function OrgCreate() {
             variant='outlined'
             type='submit'
             value='Submit'
-
           >
             Submit
           </Button>

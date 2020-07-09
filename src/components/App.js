@@ -24,6 +24,9 @@ import Pusher from 'pusher-js'
 import SecuredRoute from './SecuredRoute';
 
 import Layout from './Layout/Layout.js';
+
+import Landing from './Landing'
+
 import OrgSearch from './TenantOrg/OrgSearch.js';
 import OrgCreate from './TenantOrg/OrgCreate.js';
 import OrgDashboard from './TenantOrg/OrgDashboard.js'
@@ -106,9 +109,15 @@ function App() {
       <PusherProvider value={pusherClient}>
         <Layout>
           <Switch>
-            <Route exact path='/' component={OrgSearch} />
-            <SecuredRoute exact path='/:id' component={OrgDashboard} />
-            <SecuredRoute path='/create' component={OrgCreate} />
+            <Route exact path='/' component={Landing} />
+
+            <SecuredRoute exact path='/tenant' />
+            <SecuredRoute exact path='/organizer' />
+
+            <Route exact path='/organizations' component={OrgSearch} />
+            <SecuredRoute exact path='/organizations/:id' component={OrgDashboard} />
+            <SecuredRoute path='/organizations/create' component={OrgCreate} />
+
           </Switch>
         </Layout>
       </PusherProvider>

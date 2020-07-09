@@ -41,7 +41,7 @@ function OrgCard(props) {
         {data.orgs.map((org, index) => (
           <Grid item xs={6} key={index} style={{padding: '2em'}}>
             <Card>
-            <CardActionArea href={`/${org.id}`}>
+            <CardActionArea href={`/organizations/${org.id}`}>
             <CardContent>
             <Typography>
               {org.name}

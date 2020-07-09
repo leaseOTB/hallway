@@ -1,6 +1,8 @@
 import React from 'react';
-import {Route} from 'react-router-dom';
+import {Route, Redirect} from 'react-router-dom';
 import { useAuth0 } from "../auth/react-auth0-wrapper";
+
+import {CircularProgress} from '@material-ui/core'
 
 
 function SecuredRoute(props) {
@@ -9,8 +11,8 @@ function SecuredRoute(props) {
   return (
     <Route path={path} render={() => {
         if (!isAuthenticated) {
-          loginWithRedirect({});
-          return <div></div>;
+          // loginWithRedirect({});
+          return <Redirect to='/' />;
         }
         return <Component />
     }} />
